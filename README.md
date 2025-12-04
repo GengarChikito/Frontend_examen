@@ -1,47 +1,56 @@
-# 💻 Frontend - Sistema de Punto de Venta (POS)
+# 🕹️ Frontend - Level-Up Gamer POS
 
-Interfaz de usuario moderna y responsiva para el sistema de gestión de ventas "TiendaApp". Desarrollada con *React* y *Vite, implementando una arquitectura de **Diseño Atómico* para componentes reutilizables y escalables.
+Interfaz de usuario moderna con estilo **Cyberpunk/Gamer** para la tienda "Level-Up Gamer". Desarrollada con React y TailwindCSS, enfocada en la experiencia de usuario y la identidad visual de la marca.
 
-## 🚀 Tecnologías Utilizadas
+## 🚀 Tecnologías
 
-* *Framework:* [React 19](https://react.dev/)
-* *Build Tool:* [Vite](https://vitejs.dev/) (Rápido y ligero)
-* *Estilos:* [Tailwind CSS v4](https://tailwindcss.com/) (Diseño moderno y responsivo)
-* *Enrutamiento:* [React Router DOM v7](https://reactrouter.com/)
-* *Cliente HTTP:* [Axios](https://axios-http.com/)
-* *Iconografía & Fuentes:* Google Fonts (Plus Jakarta Sans)
+* **Core:** React 19 + Vite
+* **Estilos:** Tailwind CSS v4 (Modo Oscuro Nativo)
+* **Routing:** React Router DOM v7
+* **HTTP:** Axios
+* **Iconografía:** Emojis & Fuentes Google (Orbitron/Roboto)
+
+## 🎨 Características de Diseño & UX
+
+* **Tema Gamer:** Interfaz oscura (`#050505`) con acentos en **Verde Neón** (`#39FF14`) y **Azul Eléctrico** (`#1E90FF`).
+* **Responsive:** Adaptable a diferentes tamaños de pantalla.
+* **Fuentes:** Uso de *Orbitron* para títulos futuristas y *Roboto* para legibilidad.
+
+## 🔥 Funcionalidades Implementadas
+
+### 🛍️ Punto de Venta (Dashboard)
+* **Catálogo Interactivo:** Tarjetas de productos con efectos hover y zoom.
+* **Filtros:** Navegación rápida por categorías (Consolas, Accesorios, Ropa, etc.).
+* **Carrito Inteligente:** Cálculos en tiempo real, validación de stock y desglose de precios.
+
+### 👤 Gestión de Usuarios
+* **Login/Registro Unificado:** Formulario dual con validación de edad y registro de nuevos clientes.
+* **Roles:** Vistas diferenciadas para **Admin** (Gestión) y **Cliente** (Compra).
+
+### 📜 Historial & Reseñas
+* **Boleta Digital:** Visualización detallada de compras pasadas con desglose de **Descuento Duoc** e IVA.
+* **Sistema de Feedback:** Posibilidad de calificar productos directamente desde la boleta.
+* **Muro de Reseñas:** Página dedicada para ver las opiniones de la comunidad.
 
 ---
 
-## 📋 Requisitos Previos
+## 🛠️ Instalación
 
-1.   Tener instalado *Node.js* (v18 o superior).
-2.  Tener el *Backend* del sistema corriendo en el puerto 4000.
+1.  **Requisitos:**
+    Tener el Backend corriendo en el puerto `4000`.
 
----
-
-## 🛠️ Instalación y Configuración
-
-1.  *Clonar o descargar el repositorio*
-   Desde la Url: https://github.com/Juan-Fernandez-Jaime/intento_frond
-    
-
-
-2.  *Instalar dependencias:*
-    bash
+2.  **Instalar Dependencias:**
+    ```bash
     npm install
+    ```
 
+3.  **Ejecutar Proyecto:**
+    ```bash
+    npm run dev
+    ```
+    Visita: `http://localhost:5173`
 
-3.  *Configurar Conexión al Backend:*
-    El sistema está configurado por defecto para conectarse a localhost:4000.
-    Si necesitas cambiar esto, edita el archivo:
-    src/services/api.js
+## 🔑 Credenciales de Prueba (Seed)
 
----
-
-## ▶️ Ejecución del Proyecto
-
-Para iniciar el servidor de desarrollo:
-
-```bash
-npm run dev
+* **Administrador:** `admin@tienda.cl` | `123`
+* **Cliente Duoc (Descuento):** `juan@duoc.cl` | `123`
