@@ -7,6 +7,8 @@ const AddProductPage = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         nombre: '',
+        categoria: 'Accesorios', // Valor por defecto
+        descripcion: '',
         precio: '',
         stock: '',
         imagen: ''
@@ -18,8 +20,6 @@ const AddProductPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Convertir precio y stock a números para el backend
         const payload = {
             ...formData,
             precio: parseFloat(formData.precio),
@@ -28,76 +28,69 @@ const AddProductPage = () => {
 
         try {
             await api.post('/productos', payload);
-            alert('✅ Producto agregado correctamente a la Base de Datos');
-            navigate('/dashboard'); // Volver al catálogo
+            alert('✅ Producto agregado al inventario');
+            navigate('/dashboard');
         } catch (error) {
             console.error(error);
-            alert('❌ Error: ' + (error.response?.data?.message || 'No tienes permisos de Admin o faltan datos'));
+            alert('❌ Error al guardar');
         }
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-[#050505] text-white pb-10">
             <Navbar />
 
             <div className="container mx-auto p-6 flex justify-center">
-                <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-slate-100 p-8 mt-10">
-                    <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">✨ Agregar Nuevo Producto</h2>
+                <div className="w-full max-w-lg bg-[#111] rounded-2xl shadow-xl border border-gray-800 p-8 mt-10">
+                    <h2 className="text-2xl font-black font-orbitron text-white mb-6 text-center border-b border-gray-800 pb-4">
+                        AGREGAR PRODUCTO
+                    </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
-
-                        {/* Nombre */}
                         <div>
-                            <label className="block text-sm font-semibold text-slate-600 mb-1">Nombre del Producto</label>
-                            <input
-                                type="text" name="nombre" required
-                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                                placeholder="Ej: Teclado Gamer"
-                                onChange={handleChange}
-                            />
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre</label>
+                            <input type="text" name="nombre" required className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" placeholder="Ej: Teclado Mecánico" onChange={handleChange} />
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Categoría</label>
+                            <select name="categoria" className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" onChange={handleChange}>
+                                <option>Accesorios</option>
+                                <option>Consolas</option>
+                                <option>Juegos de Mesa</option>
+                                <option>Sillas Gamers</option>
+                                <option>Computadores Gamers</option>
+                                <option>Mouse</option>
+                                <option>Mousepad</option>
+                                <option>Poleras Personalizadas</option>
+                                {/* 2. NUEVA OPCIÓN AGREGADA */}
+                                <option>Polerones Gamers Personalizados</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Descripción</label>
+                            <textarea name="descripcion" rows="2" className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" placeholder="Detalles del producto..." onChange={handleChange}></textarea>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            {/* Precio */}
                             <div>
-                                <label className="block text-sm font-semibold text-slate-600 mb-1">Precio</label>
-                                <input
-                                    type="number" name="precio" required min="0"
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                                    placeholder="Ej: 15000"
-                                    onChange={handleChange}
-                                />
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Precio</label>
+                                <input type="number" name="precio" required className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" placeholder="15000" onChange={handleChange} />
                             </div>
-                            {/* Stock */}
                             <div>
-                                <label className="block text-sm font-semibold text-slate-600 mb-1">Stock Inicial</label>
-                                <input
-                                    type="number" name="stock" required min="0"
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                                    placeholder="Ej: 10"
-                                    onChange={handleChange}
-                                />
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Stock</label>
+                                <input type="number" name="stock" required className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" placeholder="10" onChange={handleChange} />
                             </div>
                         </div>
 
-                        {/* URL Imagen */}
                         <div>
-                            <label className="block text-sm font-semibold text-slate-600 mb-1">URL de la Imagen</label>
-                            <input
-                                type="url" name="imagen" required
-                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                                placeholder="https://..."
-                                onChange={handleChange}
-                            />
-                            <p className="text-xs text-slate-400 mt-1">Copia una URL de imagen de Google o Unsplash.</p>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Imagen (URL)</label>
+                            <input type="url" name="imagen" className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" placeholder="https://..." onChange={handleChange} />
                         </div>
 
-                        {/* Botón */}
-                        <button
-                            type="submit"
-                            className="w-full py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-lg shadow-indigo-500/30 transition-all transform hover:-translate-y-1 mt-4"
-                        >
-                            Guardar Producto
+                        <button type="submit" className="w-full py-4 rounded-xl bg-[#39FF14] hover:bg-green-400 text-black font-black uppercase tracking-widest shadow-lg shadow-green-900/50 transition-transform hover:-translate-y-1 mt-4">
+                            GUARDAR
                         </button>
                     </form>
                 </div>

@@ -2,10 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import SalesPage from './pages/SalesPage';
+import ReviewsPage from './pages/ReviewsPage'; // 1. IMPORTAR
 import AddProductPage from './pages/AddProductPage';
-import AddUserPage from './pages/AddUserPage'; // 1. IMPORTAR NUEVA PÁGINA
+import AddUserPage from './pages/AddUserPage';
 
-// Helper para leer token
 const getUserRole = () => {
     const token = localStorage.getItem('token');
     if (!token) return null;
@@ -34,10 +34,10 @@ function App() {
                 <Route path="/dashboard" element={<RutaPrivada><DashboardPage /></RutaPrivada>} />
                 <Route path="/ventas" element={<RutaPrivada><SalesPage /></RutaPrivada>} />
 
-                {/* 🔒 Rutas de Admin */}
-                <Route path="/agregar-producto" element={<RutaAdmin><AddProductPage /></RutaAdmin>} />
+                {/* 2. AGREGAR LA RUTA */}
+                <Route path="/resenas" element={<RutaPrivada><ReviewsPage /></RutaPrivada>} />
 
-                {/* 2. NUEVA RUTA REGISTRADA */}
+                <Route path="/agregar-producto" element={<RutaAdmin><AddProductPage /></RutaAdmin>} />
                 <Route path="/crear-usuario" element={<RutaAdmin><AddUserPage /></RutaAdmin>} />
             </Routes>
         </BrowserRouter>

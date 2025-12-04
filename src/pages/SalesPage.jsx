@@ -24,6 +24,7 @@ const SalesPage = () => {
         const saleData = {
             ...boleta,
             items: boleta.detalles.map(detalle => ({
+                id: detalle.producto?.id, // <--- CAMBIO CRÍTICO: ID necesario para la reseña
                 nombre: detalle.producto?.nombre || 'Producto eliminado',
                 precio: detalle.producto?.precio || 0,
                 cantidad: detalle.cantidad
@@ -33,97 +34,99 @@ const SalesPage = () => {
         setIsModalOpen(true);
     };
 
-    // 1. CÁLCULO DE INGRESOS TOTALES
     const totalIngresos = boletas.reduce((acc, boleta) => acc + Number(boleta.total), 0);
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-10">
+        <div className="min-h-screen bg-[#050505] pb-10 text-white">
             <Navbar />
-
-            <ReceiptModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                saleData={selectedSale}
-            />
+            <ReceiptModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} saleData={selectedSale} />
 
             <div className="container mx-auto p-6">
 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <h2 className="text-3xl font-bold text-gray-800">Historial de Ventas</h2>
+                {/* Encabezado */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-gray-800 pb-6">
+                    <div>
+                        <h2 className="text-3xl font-black font-orbitron text-white flex items-center gap-2">
+                            <span className="text-[#1E90FF] animate-pulse">///</span> HISTORIAL DE PARTIDAS
+                        </h2>
+                        <p className="text-gray-500 text-sm mt-1">Registro completo de transacciones</p>
+                    </div>
 
-                    {/* 2. TARJETA DE RESUMEN DE INGRESOS */}
-                    <div className="bg-white px-6 py-4 rounded-xl shadow-md border border-slate-100 flex items-center gap-4 animate-in fade-in slide-in-from-right duration-500">
-                        <div className="p-3 bg-emerald-100 text-emerald-600 rounded-full">
-                            <span className="text-2xl">💰</span>
+                    <div className="bg-[#111] px-6 py-4 rounded-xl shadow-lg border border-gray-800 flex items-center gap-4">
+                        <div className="p-3 bg-gradient-to-br from-[#39FF14]/20 to-green-900/20 text-[#39FF14] rounded-full border border-[#39FF14]/30">
+                            <span className="text-2xl">🏆</span>
                         </div>
                         <div>
-                            <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Ingresos Totales</p>
-                            <p className="text-2xl font-extrabold text-slate-800">
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Ingresos Totales</p>
+                            <p className="text-2xl font-black text-white font-mono">
                                 ${totalIngresos.toLocaleString()}
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden">
+                {/* Tabla Gamer */}
+                <div className="bg-[#111] rounded-2xl shadow-2xl border border-gray-800 overflow-hidden relative">
+                    {/* Efecto de borde superior brillante */}
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#1E90FF] to-transparent opacity-50"></div>
+
                     <table className="w-full text-left border-collapse">
-                        <thead className="bg-gray-50 border-b border-gray-200">
+                        <thead className="bg-black text-gray-500">
                         <tr>
-                            <th className="p-4 font-semibold text-slate-600 text-xs uppercase tracking-wider">ID</th>
-                            <th className="p-4 font-semibold text-slate-600 text-xs uppercase tracking-wider">Fecha</th>
-                            <th className="p-4 font-semibold text-slate-600 text-xs uppercase tracking-wider">Vendedor</th>
-                            <th className="p-4 font-semibold text-slate-600 text-xs uppercase tracking-wider">Pago</th>
-                            <th className="p-4 font-semibold text-slate-600 text-xs uppercase tracking-wider text-right">Total</th>
-                            <th className="p-4 font-semibold text-slate-600 text-xs uppercase tracking-wider text-center">Acciones</th>
+                            <th className="p-5 font-bold text-xs uppercase tracking-wider border-b border-gray-800">ID</th>
+                            <th className="p-5 font-bold text-xs uppercase tracking-wider border-b border-gray-800">Fecha</th>
+                            <th className="p-5 font-bold text-xs uppercase tracking-wider border-b border-gray-800">Jugador (Cliente)</th>
+                            <th className="p-5 font-bold text-xs uppercase tracking-wider border-b border-gray-800">Modo Pago</th>
+                            <th className="p-5 font-bold text-xs uppercase tracking-wider border-b border-gray-800 text-right">Score (Total)</th>
+                            <th className="p-5 font-bold text-xs uppercase tracking-wider border-b border-gray-800 text-center">Loot</th>
                         </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-gray-800/50">
                         {boletas.map((boleta) => (
-                            <tr key={boleta.id} className="hover:bg-indigo-50/30 transition-colors group">
-                                <td className="p-4 font-bold text-indigo-600">
+                            <tr key={boleta.id} className="hover:bg-[#1E90FF]/5 transition-colors group">
+                                <td className="p-5 font-bold text-[#1E90FF] font-mono">
                                     #{boleta.id.toString().padStart(4, '0')}
                                 </td>
-                                <td className="p-4 text-slate-600 text-sm">
-                                    {new Date(boleta.fecha).toLocaleDateString()} <br/>
-                                    <span className="text-xs text-slate-400">{new Date(boleta.fecha).toLocaleTimeString()}</span>
+                                <td className="p-5 text-gray-300 text-sm">
+                                    {new Date(boleta.fecha).toLocaleDateString()}
+                                    <span className="text-xs text-gray-600 block mt-0.5">{new Date(boleta.fecha).toLocaleTimeString()}</span>
                                 </td>
-                                <td className="p-4 text-slate-700 font-medium text-sm">
+                                <td className="p-5 text-gray-300 font-medium text-sm flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center text-xs text-gray-400">👤</div>
                                     {boleta.usuario?.nombre || 'Desconocido'}
                                 </td>
-                                <td className="p-4">
-                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold border uppercase ${
-                        boleta.metodoPago === 'TARJETA'
-                            ? 'bg-indigo-100 text-indigo-700 border-indigo-200'
-                            : 'bg-emerald-100 text-emerald-700 border-emerald-200'
-                    }`}>
-                        {boleta.metodoPago || 'EFECTIVO'}
-                    </span>
+                                <td className="p-5">
+                                    <span className={`px-2 py-1 rounded text-[10px] font-bold border uppercase tracking-wider ${
+                                        boleta.metodoPago === 'TARJETA'
+                                            ? 'bg-blue-900/20 text-blue-400 border-blue-800/50'
+                                            : 'bg-green-900/20 text-green-400 border-green-800/50'
+                                    }`}>
+                                        {boleta.metodoPago || 'EFECTIVO'}
+                                    </span>
                                 </td>
-                                <td className="p-4 text-right font-bold text-slate-800">
+                                <td className="p-5 text-right font-black text-white font-mono">
                                     ${parseInt(boleta.total).toLocaleString()}
                                 </td>
-                                <td className="p-4 text-center">
+                                <td className="p-5 text-center">
                                     <button
                                         onClick={() => handleViewReceipt(boleta)}
-                                        className="p-2 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 shadow-sm transition-all transform active:scale-95 group-hover:bg-indigo-50"
-                                        title="Ver Boleta Detallada"
+                                        className="p-2 rounded-lg bg-black border border-gray-700 text-gray-400 hover:text-[#39FF14] hover:border-[#39FF14] shadow-sm transition-all transform active:scale-95"
+                                        title="Ver Detalle"
                                     >
-                                        👁️
+                                        📜
                                     </button>
                                 </td>
                             </tr>
                         ))}
-
-                        {boletas.length === 0 && (
-                            <tr>
-                                <td colSpan="6" className="p-12 text-center text-slate-400">
-                                    <span className="text-4xl block mb-2">📭</span>
-                                    No hay ventas registradas aún.
-                                </td>
-                            </tr>
-                        )}
                         </tbody>
                     </table>
+
+                    {boletas.length === 0 && (
+                        <div className="p-16 text-center text-gray-600">
+                            <span className="text-5xl block mb-4 opacity-20">🕹️</span>
+                            <p className="uppercase tracking-widest text-sm">No hay partidas registradas</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
