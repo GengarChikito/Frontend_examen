@@ -2,94 +2,78 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Navbar from '../components/organisms/Navbar';
+import Button from '../components/atoms/Button';
+import Input from '../components/atoms/Input';
+import Select from '../components/atoms/Select';
 
-const AddProductPage = () => {
+const AddUserPage = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
+    const [loading, setLoading] = useState(false);
+    const [form, setForm] = useState({
         nombre: '',
-        categoria: 'Accesorios', // Valor por defecto
-        descripcion: '',
-        precio: '',
-        stock: '',
-        imagen: ''
+        email: '',
+        password: '',
+        fechaNacimiento: '',
+        role: 'cliente'
     });
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setForm({ ...form, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const payload = {
-            ...formData,
-            precio: parseFloat(formData.precio),
-            stock: parseInt(formData.stock)
-        };
-
+        setLoading(true);
         try {
-            await api.post('/productos', payload);
-            alert('✅ Producto agregado al inventario');
-            navigate('/dashboard');
+            await api.post('/auth/register', form);
+            alert('✅ Usuario creado exitosamente');
+            navigate('/dashboard'); // Opcional: navegar a una lista de usuarios si existiera
         } catch (error) {
             console.error(error);
-            alert('❌ Error al guardar');
+            alert('❌ Error: ' + (error.response?.data?.message || 'No se pudo crear el usuario'));
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white pb-10">
+        <div className="min-h-screen bg-[#050505] text-white pb-20">
             <Navbar />
+            <div className="container mx-auto p-6 flex justify-center mt-10">
+                <div className="w-full max-w-xl bg-[#111] border-2 border-[#39FF14] rounded-2xl p-8 shadow-[0_0_30px_rgba(57,255,20,0.15)] relative overflow-hidden">
 
-            <div className="container mx-auto p-6 flex justify-center">
-                <div className="w-full max-w-lg bg-[#111] rounded-2xl shadow-xl border border-gray-800 p-8 mt-10">
-                    <h2 className="text-2xl font-black font-orbitron text-white mb-6 text-center border-b border-gray-800 pb-4">
-                        AGREGAR PRODUCTO
+                    {/* Efecto decorativo */}
+                    <div className="absolute top-0 left-0 w-40 h-40 bg-[#39FF14] opacity-5 blur-[80px] rounded-full pointer-events-none"></div>
+
+                    <h2 className="text-3xl font-black font-orbitron text-white mb-8 text-center">
+                        REGISTRAR <span className="text-[#1E90FF]">JUGADOR</span>
                     </h2>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre</label>
-                            <input type="text" name="nombre" required className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" placeholder="Ej: Teclado Mecánico" onChange={handleChange} />
-                        </div>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <Input label="Nombre de Usuario" name="nombre" value={form.nombre} onChange={handleChange} placeholder="GamerTag" />
 
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Categoría</label>
-                            <select name="categoria" className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" onChange={handleChange}>
-                                <option>Accesorios</option>
-                                <option>Consolas</option>
-                                <option>Juegos de Mesa</option>
-                                <option>Sillas Gamers</option>
-                                <option>Computadores Gamers</option>
-                                <option>Mouse</option>
-                                <option>Mousepad</option>
-                                <option>Poleras Personalizadas</option>
-                            </select>
-                        </div>
+                        <Input label="Correo Electrónico" type="email" name="email" value={form.email} onChange={handleChange} placeholder="usuario@ejemplo.com" />
 
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Descripción</label>
-                            <textarea name="descripcion" rows="2" className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" placeholder="Detalles del producto..." onChange={handleChange}></textarea>
-                        </div>
+                        <Input label="Contraseña" type="password" name="password" value={form.password} onChange={handleChange} placeholder="••••••••" />
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Precio</label>
-                                <input type="number" name="precio" required className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" placeholder="15000" onChange={handleChange} />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Stock</label>
-                                <input type="number" name="stock" required className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" placeholder="10" onChange={handleChange} />
-                            </div>
-                        </div>
+                        <Input label="Fecha de Nacimiento" type="date" name="fechaNacimiento" value={form.fechaNacimiento} onChange={handleChange} />
 
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Imagen (URL)</label>
-                            <input type="url" name="imagen" className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#1E90FF] outline-none" placeholder="https://..." onChange={handleChange} />
-                        </div>
+                        <Select
+                            label="Rol del Usuario"
+                            name="role"
+                            value={form.role}
+                            onChange={handleChange}
+                            options={[
+                                { value: 'cliente', label: 'Cliente (Jugador)' },
+                                { value: 'admin', label: 'Administrador (Game Master)' }
+                            ]}
+                        />
 
-                        <button type="submit" className="w-full py-4 rounded-xl bg-[#39FF14] hover:bg-green-400 text-black font-black uppercase tracking-widest shadow-lg shadow-green-900/50 transition-transform hover:-translate-y-1 mt-4">
-                            GUARDAR
-                        </button>
+                        <div className="pt-4">
+                            <Button type="submit" variant="gamer-blue" className="w-full py-4 text-lg" disabled={loading}>
+                                {loading ? 'Registrando...' : 'CREAR USUARIO'}
+                            </Button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -97,4 +81,4 @@ const AddProductPage = () => {
     );
 };
 
-export default AddProductPage;
+export default AddUserPage;
