@@ -198,7 +198,7 @@ const ProfilePage = () => {
                     {/* --- COLUMNA DERECHA: ESTADÍSTICAS Y NIVEL --- */}
                     <div className="lg:col-span-1 space-y-6">
 
-                        {/* 1. TARJETA DE NIVEL (Nuevo componente basado en tu imagen) */}
+                        {/* 1. TARJETA DE NIVEL */}
                         <div className="bg-black border-2 border-[#39FF14] rounded-2xl p-6 text-center shadow-[0_0_20px_rgba(57,255,20,0.2)]">
                             <h3 className="text-[#39FF14] font-orbitron text-2xl font-bold mb-2">
                                 {nivelActual.titulo}
@@ -263,14 +263,15 @@ const ProfilePage = () => {
                 </div>
             </div>
 
-            {/* WhatsApp Float */}
+            {/* --- WhatsApp Float (ACTUALIZADO AL ESTILO PÍLDORA) --- */}
             <a
                 href="https://wa.me/56912345678"
                 target="_blank"
                 rel="noreferrer"
-                className="fixed bottom-6 right-6 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-[0_0_15px_#25D366] hover:scale-110 transition-transform z-50"
+                className="fixed bottom-6 right-6 bg-[#25D366] text-white px-6 py-3 rounded-full shadow-[0_0_20px_rgba(37,211,102,0.6)] hover:scale-110 transition-transform z-50 flex items-center gap-2 font-bold border-2 border-white"
             >
-                <i className="fab fa-whatsapp"></i>
+                <span className="text-xl">💬</span>
+                <span>Soporte</span>
             </a>
         </div>
     );
