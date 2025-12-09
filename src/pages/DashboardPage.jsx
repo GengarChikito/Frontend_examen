@@ -1,19 +1,28 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import ProductCard from '../components/molecules/ProductCard';
 import Cart from '../components/organisms/Card';
 import Navbar from '../components/organisms/Navbar';
 import ReceiptModal from '../components/organisms/ReceiptModal';
+import Input from '../components/atoms/Input';
+import Select from '../components/atoms/Select';
 
 const DashboardPage = () => {
+    // --- ESTADOS DE DATOS ---
     const [productos, setProductos] = useState([]);
-    const [productosFiltrados, setProductosFiltrados] = useState([]); // Estado para filtros
-    const [categoriaActiva, setCategoriaActiva] = useState('Todas'); // Categoría seleccionada
-
+    const [productosFiltrados, setProductosFiltrados] = useState([]);
     const [carrito, setCarrito] = useState([]);
-    const [showReceipt, setShowReceipt] = useState(false);
     const [lastSale, setLastSale] = useState(null);
+    const [showReceipt, setShowReceipt] = useState(false);
+
+    // --- ESTADOS DE FILTROS ---
+    const [filters, setFilters] = useState({
+        search: '',
+        category: '',
+        priceRange: ''
+    });
+
     const navigate = useNavigate();
 
     // Lógica Admin
@@ -27,11 +36,12 @@ const DashboardPage = () => {
     };
     const isAdmin = checkAdmin();
 
+    // --- CARGA INICIAL ---
     const cargarProductos = async () => {
         try {
             const { data } = await api.get('/productos');
             setProductos(data);
-            setProductosFiltrados(data); // Inicialmente mostramos todos
+            setProductosFiltrados(data);
         } catch (error) {
             if (error.response?.status === 401) navigate('/');
         }
@@ -39,18 +49,58 @@ const DashboardPage = () => {
 
     useEffect(() => { cargarProductos(); }, []);
 
-    // --- LÓGICA DE FILTRADO ---
-    const filtrarPorCategoria = (categoria) => {
-        setCategoriaActiva(categoria);
-        if (categoria === 'Todas') {
-            setProductosFiltrados(productos);
-        } else {
-            setProductosFiltrados(productos.filter(p => p.categoria === categoria));
+    // --- LÓGICA DE FILTRADO (EFECTO) ---
+    useEffect(() => {
+        let resultado = productos;
+
+        // 1. Filtro por Búsqueda (Nombre)
+        if (filters.search) {
+            const term = filters.search.toLowerCase();
+            resultado = resultado.filter(p =>
+                p.nombre.toLowerCase().includes(term)
+            );
         }
+
+        // 2. Filtro por Categoría
+        if (filters.category && filters.category !== 'Todas') {
+            resultado = resultado.filter(p => p.categoria === filters.category);
+        }
+
+        // 3. Filtro por Precio
+        if (filters.priceRange) {
+            const [min, max] = filters.priceRange.split('-').map(Number);
+            // Si es "500000+" el max será undefined o NaN, manejamos eso
+            if (filters.priceRange.includes('+')) {
+                const minVal = parseInt(filters.priceRange);
+                resultado = resultado.filter(p => parseFloat(p.precio) >= minVal);
+            } else {
+                resultado = resultado.filter(p => {
+                    const precio = parseFloat(p.precio);
+                    return precio >= min && precio <= max;
+                });
+            }
+        }
+
+        setProductosFiltrados(resultado);
+    }, [filters, productos]); // Se ejecuta cada vez que cambian los filtros o la lista base
+
+    // --- HANDLERS DE FILTROS ---
+    const handleFilterChange = (e) => {
+        setFilters({ ...filters, [e.target.name]: e.target.value });
     };
 
-    // Extraer categorías únicas
-    const categorias = ['Todas', ...new Set(productos.map(p => p.categoria || 'Otros'))];
+    // Opciones para Selects
+    const categoriasUnicas = ['Todas', ...new Set(productos.map(p => p.categoria || 'Otros'))];
+    const categoryOptions = categoriasUnicas.map(cat => ({ value: cat, label: cat }));
+
+    const priceOptions = [
+        { value: '', label: 'Todos los precios' },
+        { value: '0-25000', label: '$0 - $25.000' },
+        { value: '25000-50000', label: '$25.000 - $50.000' },
+        { value: '50000-100000', label: '$50.000 - $100.000' },
+        { value: '100000-500000', label: '$100.000 - $500.000' },
+        { value: '500000+', label: '$500.000+' }
+    ];
 
     // --- LÓGICA CARRITO ---
     const agregar = (prod) => {
@@ -93,27 +143,34 @@ const DashboardPage = () => {
 
                     {/* COLUMNA IZQUIERDA: CATÁLOGO */}
                     <div className="lg:col-span-8">
-                        {/* Encabezado y Filtros */}
-                        <div className="mb-8">
-                            <h2 className="text-3xl font-black text-white mb-4 flex items-center gap-2">
+
+                        {/* PANEL DE FILTROS (Atomic Design) */}
+                        <div className="mb-8 bg-[#111] p-6 rounded-2xl border border-gray-800 shadow-lg">
+                            <h2 className="text-2xl font-black text-white mb-4 flex items-center gap-2 font-orbitron">
                                 <span className="text-[#39FF14]">///</span> CATÁLOGO
                             </h2>
 
-                            {/* Botones de Filtro */}
-                            <div className="flex flex-wrap gap-2">
-                                {categorias.map(cat => (
-                                    <button
-                                        key={cat}
-                                        onClick={() => filtrarPorCategoria(cat)}
-                                        className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all border ${
-                                            categoriaActiva === cat
-                                                ? 'bg-[#1E90FF] text-white border-[#1E90FF] shadow-[0_0_10px_#1E90FF]'
-                                                : 'bg-black text-gray-400 border-gray-800 hover:border-gray-500 hover:text-white'
-                                        }`}
-                                    >
-                                        {cat}
-                                    </button>
-                                ))}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <Input
+                                    placeholder="Buscar producto..."
+                                    name="search"
+                                    value={filters.search}
+                                    onChange={handleFilterChange}
+                                />
+
+                                <Select
+                                    name="category"
+                                    value={filters.category}
+                                    onChange={handleFilterChange}
+                                    options={[{ value: '', label: 'Todas las Categorías' }, ...categoryOptions.filter(o => o.value !== 'Todas')]}
+                                />
+
+                                <Select
+                                    name="priceRange"
+                                    value={filters.priceRange}
+                                    onChange={handleFilterChange}
+                                    options={priceOptions}
+                                />
                             </div>
                         </div>
 
@@ -136,9 +193,15 @@ const DashboardPage = () => {
                         </div>
 
                         {productosFiltrados.length === 0 && (
-                            <div className="text-center py-20 text-gray-500">
-                                <p className="text-2xl">👾</p>
-                                <p>No se encontraron productos en esta categoría.</p>
+                            <div className="text-center py-20 text-gray-500 border border-dashed border-gray-800 rounded-xl mt-4">
+                                <p className="text-4xl mb-2">👾</p>
+                                <p className="font-orbitron">No se encontraron productos con estos filtros.</p>
+                                <button
+                                    onClick={() => setFilters({ search: '', category: '', priceRange: '' })}
+                                    className="mt-4 text-[#1E90FF] hover:underline cursor-pointer"
+                                >
+                                    Limpiar filtros
+                                </button>
                             </div>
                         )}
                     </div>
@@ -157,12 +220,12 @@ const DashboardPage = () => {
                 </div>
             </div>
 
-            {/* Footer flotante con WhatsApp (Soporte) */}
+            {/* Footer flotante */}
             <a
                 href="https://wa.me/56912345678"
                 target="_blank"
                 rel="noreferrer"
-                className="fixed bottom-6 right-6 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:scale-110 transition-transform z-50 flex items-center gap-2 font-bold"
+                className="fixed bottom-6 right-6 bg-[#25D366] text-white p-4 rounded-full shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:scale-110 transition-transform z-50 flex items-center gap-2 font-bold"
             >
                 <span>💬 Soporte</span>
             </a>

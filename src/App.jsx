@@ -2,9 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import SalesPage from './pages/SalesPage';
-import ReviewsPage from './pages/ReviewsPage'; // 1. IMPORTAR
+import ReviewsPage from './pages/ReviewsPage';
 import AddProductPage from './pages/AddProductPage';
 import AddUserPage from './pages/AddUserPage';
+import ProfilePage from './pages/ProfilePage';
+import EventsPage from './pages/EventsPage'; // NUEVO
+import BlogPage from './pages/BlogPage';     // NUEVO
 
 const getUserRole = () => {
     const token = localStorage.getItem('token');
@@ -31,12 +34,19 @@ function App() {
             <Routes>
                 <Route path="/" element={<LoginPage />} />
 
+                {/* Rutas Principales */}
                 <Route path="/dashboard" element={<RutaPrivada><DashboardPage /></RutaPrivada>} />
-                <Route path="/ventas" element={<RutaPrivada><SalesPage /></RutaPrivada>} />
+                <Route path="/perfil" element={<RutaPrivada><ProfilePage /></RutaPrivada>} />
 
-                {/* 2. AGREGAR LA RUTA */}
+                {/* Nuevas Funcionalidades */}
+                <Route path="/eventos" element={<RutaPrivada><EventsPage /></RutaPrivada>} />
+                <Route path="/blog" element={<RutaPrivada><BlogPage /></RutaPrivada>} />
+
+                {/* Historial y Reseñas */}
+                <Route path="/ventas" element={<RutaAdmin><SalesPage /></RutaAdmin>} />
                 <Route path="/resenas" element={<RutaPrivada><ReviewsPage /></RutaPrivada>} />
 
+                {/* Administración */}
                 <Route path="/agregar-producto" element={<RutaAdmin><AddProductPage /></RutaAdmin>} />
                 <Route path="/crear-usuario" element={<RutaAdmin><AddUserPage /></RutaAdmin>} />
             </Routes>

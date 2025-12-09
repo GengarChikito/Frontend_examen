@@ -11,6 +11,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [nombre, setNombre] = useState('');
     const [fechaNacimiento, setFechaNacimiento] = useState('');
+    const [codigoReferido, setCodigoReferido] = useState(''); // 1. NUEVO ESTADO
 
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -26,10 +27,11 @@ const LoginPage = () => {
                     nombre,
                     email,
                     password,
-                    fechaNacimiento, // Requerido por el backend
-                    role: 'cliente'  // Por defecto cliente
+                    fechaNacimiento,
+                    role: 'cliente',
+                    codigoReferidoUsado: codigoReferido // 2. ENVIAR AL BACKEND
                 });
-                alert('¡Registro exitoso! Ahora inicia sesión.');
+                alert('¡Registro exitoso! Ganaste puntos iniciales si usaste un código válido.');
                 setIsRegister(false); // Volver al login
             } else {
                 // Lógica de LOGIN
@@ -84,6 +86,24 @@ const LoginPage = () => {
                                     required
                                 />
                                 <p className="text-[10px] text-gray-500 mt-1">* Debes ser mayor de 18 años.</p>
+                            </div>
+
+                            {/* 3. CAMPO DE CÓDIGO DE REFERIDO */}
+                            <div>
+                                <label className="block text-gray-400 text-xs font-bold mb-1 uppercase">
+                                    Código de Referido <span className="text-[#39FF14]">(Opcional)</span>
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-3 rounded-xl bg-black border border-gray-700 text-white focus:border-[#39FF14] focus:ring-1 focus:ring-[#39FF14] outline-none transition-all pl-10"
+                                        placeholder="Ej: JUAN01"
+                                        value={codigoReferido}
+                                        onChange={(e) => setCodigoReferido(e.target.value)}
+                                    />
+                                    <span className="absolute left-3 top-3.5 text-gray-500">🎁</span>
+                                </div>
+                                <p className="text-[10px] text-gray-500 mt-1">Ingresa el código de un amigo para ganar puntos extra.</p>
                             </div>
                         </>
                     )}

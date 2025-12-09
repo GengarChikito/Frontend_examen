@@ -1,29 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 
-const ReviewModal = ({ isOpen, onClose, product }) => {
+const ReviewModal = ({ isOpen, onClose, product, initialData = null, onSuccess }) => {
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
     const [loading, setLoading] = useState(false);
 
+    // Cargar datos si estamos editando
+    useEffect(() => {
+        if (isOpen) {
+            if (initialData) {
+                setRating(initialData.calificacion);
+                setComment(initialData.texto);
+            } else {
+                setRating(5);
+                setComment('');
+            }
+        }
+    }, [isOpen, initialData]);
+
     if (!isOpen || !product) return null;
+
+    const isEditing = !!initialData;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await api.post('/resenas', {
-                productoId: product.id,
-                texto: comment,
-                calificacion: rating
-            });
-            alert('✅ ¡Reseña enviada! Gracias por tu feedback.');
+            if (isEditing) {
+                // EDITAR (PATCH)
+                await api.patch(`/resenas/${initialData.id}`, {
+                    texto: comment,
+                    calificacion: rating
+                });
+                alert('✅ Reseña actualizada correctamente');
+            } else {
+                // CREAR (POST)
+                await api.post('/resenas', {
+                    productoId: product.id,
+                    texto: comment,
+                    calificacion: rating
+                });
+                alert('✅ ¡Reseña enviada! Gracias por tu feedback.');
+            }
+
+            if (onSuccess) onSuccess(); // Recargar lista
             onClose();
-            setComment('');
-            setRating(5);
         } catch (error) {
             console.error(error);
-            alert('❌ Error al enviar reseña. ' + (error.response?.data?.message || ''));
+            alert('❌ Error: ' + (error.response?.data?.message || 'Algo salió mal'));
         } finally {
             setLoading(false);
         }
@@ -33,13 +58,14 @@ const ReviewModal = ({ isOpen, onClose, product }) => {
         <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
             <div className="bg-[#111] border border-gray-800 w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
 
+                <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-white">✕</button>
+
                 <h3 className="text-xl font-black font-orbitron text-white mb-1">
-                    CALIFICAR <span className="text-[#1E90FF]">LOOT</span>
+                    {isEditing ? 'EDITAR' : 'CALIFICAR'} <span className="text-[#1E90FF]">LOOT</span>
                 </h3>
                 <p className="text-gray-400 text-sm mb-6">Producto: <span className="text-[#39FF14]">{product.nombre}</span></p>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-
                     {/* Estrellas */}
                     <div>
                         <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Puntuación</label>
@@ -62,7 +88,7 @@ const ReviewModal = ({ isOpen, onClose, product }) => {
                         <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Tu Opinión</label>
                         <textarea
                             rows="3"
-                            className="w-full bg-black border border-gray-700 rounded-xl p-3 text-white focus:border-[#1E90FF] outline-none resize-none"
+                            className="w-full bg-black border border-gray-700 rounded-xl p-3 text-white focus:border-[#1E90FF] outline-none resize-none font-roboto"
                             placeholder="¿Qué tal funciona? Cuéntanos..."
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
@@ -83,7 +109,7 @@ const ReviewModal = ({ isOpen, onClose, product }) => {
                             disabled={loading}
                             className="flex-1 py-3 rounded-xl bg-[#1E90FF] hover:bg-blue-600 text-white font-bold shadow-lg shadow-blue-900/50 transition-all"
                         >
-                            {loading ? 'Enviando...' : 'Publicar Reseña'}
+                            {loading ? 'Procesando...' : (isEditing ? 'Actualizar' : 'Publicar')}
                         </button>
                     </div>
                 </form>

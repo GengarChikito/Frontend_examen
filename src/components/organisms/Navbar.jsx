@@ -10,7 +10,7 @@ const Navbar = () => {
         if (!token) return null;
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
-            return { role: payload.role, nombre: payload.nombre, email: payload.email };
+            return { role: payload.role, nombre: payload.nombre };
         } catch (e) { return null; }
     };
 
@@ -22,53 +22,54 @@ const Navbar = () => {
         navigate('/');
     };
 
+    // Estilo activo basado en el diseño de referencia (borde inferior neón)
     const isActive = (path) => location.pathname === path
-        ? "text-[#39FF14] border-b-2 border-[#39FF14] pb-1 shadow-[0_0_10px_#39FF14]"
-        : "text-gray-300 hover:text-[#1E90FF] transition-colors";
+        ? "text-[#39FF14] border-b-2 border-[#39FF14]"
+        : "text-gray-300 hover:text-[#1E90FF] transition-colors hover:border-b-2 hover:border-[#1E90FF]";
 
     return (
-        <nav className="bg-black/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50 shadow-lg shadow-blue-900/10">
+        <nav className="bg-black/95 backdrop-blur-md border-b-2 border-[#1E90FF] sticky top-0 z-50">
             <div className="container mx-auto px-6 py-4 flex justify-between items-center">
 
                 {/* LOGO */}
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[#1E90FF] to-blue-800 rounded-lg flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/50 transform rotate-3">
-                        L
+                <Link to="/dashboard" className="flex items-center gap-2 group text-decoration-none">
+                    <div className="text-[#1E90FF] text-2xl group-hover:rotate-12 transition-transform">
+                        <i className="fas fa-gamepad"></i> 🎮
                     </div>
-                    <span className="text-xl font-black text-white tracking-wider hidden sm:block">
+                    <span className="text-xl font-black text-white tracking-wider font-orbitron">
                         LEVEL-UP <span className="text-[#39FF14]">GAMER</span>
                     </span>
-                </div>
+                </Link>
 
                 {/* MENÚ */}
-                <div className="hidden md:flex gap-6 items-center">
-                    <Link to="/dashboard" className={`font-bold text-sm uppercase ${isActive('/dashboard')}`}>Catálogo</Link>
-                    <Link to="/ventas" className={`font-bold text-sm uppercase ${isActive('/ventas')}`}>Historial</Link>
-
-                    {/* 1. LINK AGREGADO */}
-                    <Link to="/resenas" className={`font-bold text-sm uppercase ${isActive('/resenas')}`}>Reseñas</Link>
+                <div className="hidden md:flex gap-8 items-center">
+                    <Link to="/dashboard" className={`font-bold text-sm uppercase py-1 ${isActive('/dashboard')}`}>Catálogo</Link>
+                    <Link to="/eventos" className={`font-bold text-sm uppercase py-1 ${isActive('/eventos')}`}>Eventos</Link>
+                    <Link to="/blog" className={`font-bold text-sm uppercase py-1 ${isActive('/blog')}`}>Blog</Link>
 
                     {isAdmin && (
-                        <>
-                            <div className="h-6 w-px bg-gray-700 mx-2"></div> {/* Separador */}
-                            <Link to="/agregar-producto" className={`font-bold text-sm uppercase ${isActive('/agregar-producto')}`}>+ Producto</Link>
-                            <Link to="/crear-usuario" className={`font-bold text-sm uppercase ${isActive('/crear-usuario')}`}>+ Usuario</Link>
-                        </>
+                        <Link to="/ventas" className={`font-bold text-sm uppercase py-1 ${isActive('/ventas')}`}>Historial</Link>
                     )}
+
+                    <Link to="/resenas" className={`font-bold text-sm uppercase py-1 ${isActive('/resenas')}`}>Reseñas</Link>
                 </div>
 
                 {/* USUARIO */}
                 <div className="flex items-center gap-4">
                     {user && (
-                        <div className="text-right hidden sm:block">
-                            <p className="text-sm font-bold text-white">{user.nombre}</p>
-                            <span className="text-[10px] uppercase font-bold text-[#1E90FF] tracking-widest">
-                                {user.role}
-                            </span>
+                        <div className="flex items-center gap-3 bg-[#1E90FF]/10 px-4 py-2 rounded-full border border-[#1E90FF]/50">
+                            <span className="text-sm font-bold text-white">{user.nombre}</span>
+                            <Link to="/perfil" className="text-[#39FF14] hover:text-white transition-colors" title="Mi Perfil">
+                                👤
+                            </Link>
                         </div>
                     )}
-                    <button onClick={handleLogout} className="text-gray-400 hover:text-red-500 transition-colors" title="Salir">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                    <button
+                        onClick={handleLogout}
+                        className="text-gray-400 hover:text-red-500 transition-colors transform hover:scale-110"
+                        title="Cerrar Sesión"
+                    >
+                        🚪
                     </button>
                 </div>
             </div>
