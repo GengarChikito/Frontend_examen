@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+// Usar la variable de entorno VITE_API_URL
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+
 const api = axios.create({
-    baseURL: 'http://localhost:4000/api', // Según tu api.ts
+    baseURL: API_URL,
 });
 
 // Interceptor para agregar el Token automáticamente
