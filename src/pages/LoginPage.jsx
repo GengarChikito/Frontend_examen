@@ -11,7 +11,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [nombre, setNombre] = useState('');
     const [fechaNacimiento, setFechaNacimiento] = useState('');
-    const [codigoReferido, setCodigoReferido] = useState(''); // 1. NUEVO ESTADO
+    const [codigoReferido, setCodigoReferido] = useState('');
 
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -29,7 +29,7 @@ const LoginPage = () => {
                     password,
                     fechaNacimiento,
                     role: 'cliente',
-                    codigoReferidoUsado: codigoReferido // 2. ENVIAR AL BACKEND
+                    codigoReferidoUsado: codigoReferido
                 });
                 alert('¡Registro exitoso! Ganaste puntos iniciales si usaste un código válido.');
                 setIsRegister(false); // Volver al login
@@ -42,6 +42,21 @@ const LoginPage = () => {
         } catch (error) {
             console.error(error);
             setError(error.response?.data?.message || 'Ocurrió un error. Intenta nuevamente.');
+        }
+    };
+
+    // --- NUEVA FUNCIÓN: LOGIN INVITADO ---
+    const loginAsGuest = async () => {
+        try {
+            const response = await api.post('/auth/login', {
+                email: 'invitado@levelup.com',
+                password: '123'
+            });
+            localStorage.setItem('token', response.data.access_token);
+            navigate('/dashboard');
+        } catch (error) {
+            console.error(error);
+            alert('⚠️ El usuario Invitado no existe. Asegúrate de que el Backend se haya reiniciado (Seed).');
         }
     };
 
@@ -61,7 +76,6 @@ const LoginPage = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-
                     {/* Campos extra solo para Registro */}
                     {isRegister && (
                         <>
@@ -87,8 +101,6 @@ const LoginPage = () => {
                                 />
                                 <p className="text-[10px] text-gray-500 mt-1">* Debes ser mayor de 18 años.</p>
                             </div>
-
-                            {/* 3. CAMPO DE CÓDIGO DE REFERIDO */}
                             <div>
                                 <label className="block text-gray-400 text-xs font-bold mb-1 uppercase">
                                     Código de Referido <span className="text-[#39FF14]">(Opcional)</span>
@@ -145,6 +157,26 @@ const LoginPage = () => {
                         {isRegister ? 'Registrarse' : 'Iniciar Sesión'}
                     </button>
                 </form>
+
+                {/* --- SECCIÓN DE ACCESO RÁPIDO --- */}
+                <div className="mt-8 relative">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-800"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-[#111] text-gray-500 font-bold uppercase text-[10px]">Acceso Rápido</span>
+                    </div>
+                </div>
+
+                <div className="mt-4">
+                    <button
+                        onClick={loginAsGuest}
+                        className="w-full py-3 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-500 text-white font-bold transition-all flex items-center justify-center gap-2 group"
+                    >
+                        <span className="text-xl group-hover:scale-125 transition-transform">👽</span>
+                        <span>INGRESAR COMO INVITADO</span>
+                    </button>
+                </div>
 
                 <div className="mt-6 text-center">
                     <p className="text-gray-500 text-sm">
